@@ -1,4 +1,4 @@
-# LinkedIn Job Data Pipeline
+# Data Pipeline Project using APIs, Python, Google Cloud, Airflow
 
 This repository contains an end-to-end data pipeline that extracts job listings from LinkedIn using their API, processes the data, and loads it into Google BigQuery for further analysis. This pipeline is intended to be used for data extraction, transformation, and loading (ETL) with optional integration into Airflow for scheduling and automation.
 
