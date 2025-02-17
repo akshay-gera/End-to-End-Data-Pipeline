@@ -56,3 +56,77 @@ Follow these instructions to get the project up and running on your local machin
 3. RapidAPI Key: Sign up for the LinkedIn API on RapidAPI, and get your API key.
 
 4. Install dependencies: All dependencies are listed in the requirements.txt file, and you can install them with the following command:
+   pip install -r requirements.txt
+
+### Pipeline Overview
+
+The pipeline follows a clear ETL process:
+
+1. **Data Extraction**:
+    - The `extract_data()` function fetches job data from the LinkedIn API using the provided parameters (e.g., keywords, location, date).
+    
+2. **Incremental Loading Logic**:
+    - The existing_records_check() would first check what job IDs we already have in our BigQuery data warehouse (table=Raw_Data) to avoid data duplication
+    - The `fetch_new_record_id()` function checks for new records by comparing them with existing data stored in BigQuery.
+    - We finally get new records after performing this comparing mechanism
+    
+3. **Data Loading**:
+    - The transformed data is loaded into Google BigQuery using the `load_raw_data()` function, which appends new records to the BigQuery table.
+
+The entire ETL process is wrapped in a single function, `run_etl()`, which can be run manually by executing `main.py`.
+
+---
+
+## Directory Structure
+/End-to-End-Data-Pipeline
+    ├── /utils
+    │    ├── __init__.py         # Initializes the utils package
+    │    └── ETL_Functions.py    # Relevant when Airflow DAG file is run. Contains ETL functions for extraction, transformation, and loading referred in DAG 
+    ├── /config
+    │    └── config.py           # Contains sensitive API credentials (e.g., API_KEY for LinkedIn)
+    ├── main.py                  # The entry point to execute the ETL process manually. Or to simplify things you could run this on Windows Task Scheduler to just execute this on a time itnerval
+    ├── requirements.txt         # Python dependencies
+    └── extraction.log           # Log file storing execution logs of the ETL process
+
+
+
+## Setup and Configuration
+
+### 1. **Create a Google Cloud Project**:
+   - If you haven't already, create a Google Cloud Project.
+   - Enable the **BigQuery API**.
+   - Create a Project on BigQuery studio
+   - Manually Create a Dataset called Raw (Which will be your Raw schema)
+   - Manually Create a Table in Raw dataset called Raw_Data 
+   - Create a service account and down service key json
+    ```bash
+    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials-file.json"
+    ```
+
+### 2. **Configure LinkedIn API**:
+   - Go to RapidAPI, sign up, and subscribe to the LinkedIn API.
+   - Get your **API key** from RapidAPI and place it in the `config.py` file.
+
+    ```python
+    API_KEY = "your-rapidapi-key"
+    ```
+### 3. **Airflow Connection Configuration**
+   - We are using BigQuery Hook in Airflow DAG to interact with BigQuery through Airflow
+   - For that go to Airflow UI and add the connection variable from the service account key JSON file
+---
+
+## Running the Pipeline
+
+To run the ETL pipeline locally, follow these steps:
+
+1. Clone the repository to your local machine:
+   ```bash
+   git clone https://github.com/your-username/End-to-End-Data-Pipeline.git
+   cd End-to-End-Data-Pipeline
+
+
+2. Install the necessary dependencies:
+   pip install -r requirements.txt
+3. Set up your environment variables for Google Cloud and LinkedIn API as described above.
+4. Run ETL Pipeline
+   python main.py
