@@ -45,7 +45,7 @@ This project can be executed manually via a Python script or can be scheduled vi
 
 Follow these instructions to get the project up and running on your local machine.
 
-### Prerequisites
+## Prerequisites
 
 1. **Python 3.x**: Ensure Python is installed on your system. You can verify it by running:
    ```bash
@@ -58,7 +58,7 @@ Follow these instructions to get the project up and running on your local machin
 4. Install dependencies: All dependencies are listed in the requirements.txt file, and you can install them with the following command:
    pip install -r requirements.txt
 
-### Pipeline Overview
+## Pipeline Overview
 
 The pipeline follows a clear ETL process:
 
