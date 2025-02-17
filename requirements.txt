@@ -1,0 +1,7 @@
+apache-airflow==2.4.2
+pandas==2.2.3
+protobuf==5.29.3
+Requests==2.32.3
+google-cloud-bigquery == 3.27.0
+pyarrow == 18.1.0
+apache-airflow-providers-google == 12.0.0
