@@ -7,9 +7,8 @@ import pandas as pd
 from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 
 
-# Define the path where the log file will be stored
+# Defining the path where the log file will be stored
 log_file_path = os.path.join(os.getcwd(), 'extraction.log')
-# Print the directory and full path to help debug where the log file will be created
 print(f"Current working directory: {os.getcwd()}")
 print(f"Log file will be created at: {log_file_path}")
 
@@ -20,6 +19,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+# Step 1: Creating a function to use requests to make an API call 
 def extract_data(url, headers, params):
     try:
         logging.info("Starting data extraction from LinkedIn API...")
@@ -30,24 +30,23 @@ def extract_data(url, headers, params):
         if response_data['success'] == True:
             logging.info("API Call Successful. No error messages returned")
             jobs_today = pd.json_normalize(response.json()['data'], sep='_')
+            # Adding a timestamp column to the dataframe to track when the new data was fetched
             jobs_today['timestamp_fetched'] = pd.Timestamp.now()
+            # Converting it to string type to make Xcom through Airflow possible as it will be converted to JSON to move to next step
             jobs_today['timestamp_fetched'] =jobs_today['timestamp_fetched'].astype(str)
             logging.info(f"Today's Data Extracted with {len(jobs_today)} records")
             return jobs_today
             
-
         else:
             logging.error(f"API Call failed. Response: {response_data}")
             
-    
-    
     except requests.exceptions.RequestException as e:
-        
         logging.error(f"Error fetching data from API: {e}")
     
     except Exception as e:
         logging.error(f"API Call Returned Error with message {response_data}")
 
+# Step 2: In order to frame incremental logic we need to check existing primary key column values in BigQuery
 def get_existing_ids_from_bq(project_id, dataset_id, table_id):
     
     # Using BigQueryHook which will automatically pull connection from Airflow UI
@@ -63,6 +62,7 @@ def get_existing_ids_from_bq(project_id, dataset_id, table_id):
     logging.info(f"Found {len(existing_ids)} exiting records in BigQuery")
     return existing_ids
 
+# Step 3: We compare these existing primary key with today's data fetch id to get new records
 def fetch_new_record_id(input_df, existing_ids ):
     if input_df is not None and input_df.empty == False:
         # Creating a for loop result a list of ids from input_df which are not in existing_ids
@@ -78,6 +78,7 @@ def fetch_new_record_id(input_df, existing_ids ):
     else:
         logging.info(f"No todays data to look into to check new records")
 
+# Step 4: Creating a helper function to perform a schema check on our existing columns in the BigQuery table to ensure consistency
 def bigquery_schema_check(project_id, dataset_id, table_id):
     # Using BigQueryHook which will automatically pull connection from Airflow UI
     hook = BigQueryHook(gcp_conn_id='google_cloud')  # Use your connection ID here
@@ -94,6 +95,7 @@ def bigquery_schema_check(project_id, dataset_id, table_id):
     existing_columns = [row['column_name'] for row in result] 
     return existing_columns
 
+# Step 5: Load the new data into BigQuery based on the schema check and new records
 def load_raw_data(project_id, dataset_id, table_id, todays_df):
     try:
 
@@ -112,11 +114,13 @@ def load_raw_data(project_id, dataset_id, table_id, todays_df):
         )
         # Converting the timestampt column from str to datetime to maintain schema consistency with Raw_Data table in BigQuery 
         todays_df['timestamp_fetched'] = pd.to_datetime(todays_df['timestamp_fetched'])
-        
+        # Calling the helper function to check existing schema in BigQuery
         try: 
             existing_schema_columns = bigquery_schema_check(project_id, dataset_id, table_id)
+            # Filtering the dataframe columns to match with the schema columns
             todays_df = todays_df[existing_schema_columns]
             logging.info(f"Schema Check Passed. Dataframe columns match with BigQuery Table Schema")
+        
         except Exception as e:
             logging.error(f"Failed to fetch schema from BigQuery: {e}")
         
@@ -134,7 +138,7 @@ def load_raw_data(project_id, dataset_id, table_id, todays_df):
 #from config import config
 from config.config import API_KEY
 
-
+# Setting up paramaters and variables for the functions to run on
 api_url = "https://linkedin-api8.p.rapidapi.com/search-jobs"
 
 querystring = {"keywords":"Data Analyst","locationId":"103035651","datePosted":"past24Hours","sort":"mostRecent"}
@@ -144,15 +148,13 @@ headers = {
 	"x-rapidapi-host": "linkedin-api8.p.rapidapi.com"
 }
 
-# Set your Google Cloud project ID and BigQuery dataset/table info
+# Set Google Cloud project ID and BigQuery dataset/table info
 project_id = 'linkedinapidatapipeline'
 dataset_id = 'linkedinapidatapipeline.Raw'
 table_id = f"{dataset_id}.Raw_Data"
 
+# Trigerring the function runs in all the steps
 df_jobs_today = extract_data(url=api_url, headers=headers, params=querystring)
-
-
 existing_job_ids = get_existing_ids_from_bq(project_id=project_id, dataset_id=dataset_id, table_id=table_id)
 df_jobs_today_new_records = fetch_new_record_id(input_df=df_jobs_today, existing_ids=existing_job_ids)
-
 load_raw_data(project_id=project_id, dataset_id=dataset_id, table_id=table_id, todays_df=df_jobs_today_new_records)
