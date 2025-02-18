@@ -13,8 +13,8 @@ This repository contains an end-to-end data pipeline that extracts job listings 
 5. [Directory Structure](#directory-structure)
 6. [Setup and Configuration](#setup-and-configuration)
 7. [Running the Pipeline](#running-the-pipeline)
-8. [Contributing](#contributing)
-9. [License](#license)
+8. [Airflow DAG Run Sample](#airflow-dag-run-sample)
+9. [Data Visualization](data-visualization)
 
 ---
 
@@ -130,3 +130,7 @@ To run the ETL pipeline locally, follow these steps:
 3. Set up your environment variables for Google Cloud and LinkedIn API as described above.
 4. Run ETL Pipeline
    python main.py
+
+## Airflow DAG Run Sample
+![image](https://github.com/user-attachments/assets/9b002bbf-96a6-4815-88b7-9aaf3b96c23f)
+
