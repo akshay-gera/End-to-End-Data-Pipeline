@@ -14,7 +14,7 @@ This repository contains an end-to-end data pipeline that extracts job listings 
 6. [Setup and Configuration](#setup-and-configuration)
 7. [Running the Pipeline](#running-the-pipeline)
 8. [Airflow DAG Run Sample](#airflow-dag-run-sample)
-9. [Data Visualization](data-visualization)
+9. [Data Visualization Sample](data-visualization-sample)
 
 ---
 
@@ -132,8 +132,10 @@ To run the ETL pipeline locally, follow these steps:
    python main.py
 
 ## Airflow DAG Run Sample
+- Showcasing how Airflow DAG run would like based on the DAG we created
 ![image](https://github.com/user-attachments/assets/9b002bbf-96a6-4815-88b7-9aaf3b96c23f)
 
 
 ## Data Visualization Sample
+-Showcasing how front end dashboard could look like based on this data
 ![image](https://github.com/user-attachments/assets/50084e93-4f02-4abe-b3d1-29a37e06e735)
