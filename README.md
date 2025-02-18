@@ -14,7 +14,7 @@ This repository contains an end-to-end data pipeline that extracts job listings 
 6. [Setup and Configuration](#setup-and-configuration)
 7. [Running the Pipeline](#running-the-pipeline)
 8. [Airflow DAG Run Sample](#airflow-dag-run-sample)
-9. [Data Visualization Sample](data-visualization-sample)
+9. [Data Visualization Sample](#data-visualization-sample)
 
 ---
 
