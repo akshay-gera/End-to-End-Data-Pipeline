@@ -75,18 +75,9 @@ The pipeline follows a clear ETL process:
 
 The entire ETL process is wrapped in a single function, `run_etl()`, which can be run manually by executing `main.py`.
 
----
 
 ## Directory Structure
-/End-to-End-Data-Pipeline
-    ├── /utils
-    │    ├── __init__.py         # Initializes the utils package
-    │    └── ETL_Functions.py    # Relevant when Airflow DAG file is run. Contains ETL functions for extraction, transformation, and loading referred in DAG 
-    ├── /config
-    │    └── config.py           # Contains sensitive API credentials (e.g., API_KEY for LinkedIn)
-    ├── main.py                  # The entry point to execute the ETL process manually. Or to simplify things you could run this on Windows Task Scheduler to just execute this on a time itnerval
-    ├── requirements.txt         # Python dependencies
-    └── extraction.log           # Log file storing execution logs of the ETL process
+![image](https://github.com/user-attachments/assets/3b5b1152-7b6e-425a-9cbe-43a657386190)
 
 
 
