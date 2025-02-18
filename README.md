@@ -134,3 +134,6 @@ To run the ETL pipeline locally, follow these steps:
 ## Airflow DAG Run Sample
 ![image](https://github.com/user-attachments/assets/9b002bbf-96a6-4815-88b7-9aaf3b96c23f)
 
+
+## Data Visualization Sample
+![image](https://github.com/user-attachments/assets/50084e93-4f02-4abe-b3d1-29a37e06e735)
