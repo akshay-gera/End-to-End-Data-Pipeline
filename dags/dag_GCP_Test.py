@@ -16,24 +16,40 @@ logging.basicConfig(
 )
 
 
-# Your Google Cloud project ID
-project_id = 'linkedinapidatapipeline'
 
+# Google Cloud BigQuery Project Name and Data Set
+project_id = 'linkedinapidatapipeline'
+dataset_id = f"{project_id}.Raw"
+table_id = f"{dataset_id}.Raw_Data"
 # Function to test Google Cloud connection (BigQuery)
-def test_gcp_connection():
+def test_gcp_connection(project_id=project_id, dataset_id=dataset_id, table_id=table_id):
     try:
         # Using BigQueryHook which will automatically pull connection from Airflow UI
-        hook = BigQueryHook(gcp_conn_id='google_cloud_default')  # Use your connection ID here
+        hook = BigQueryHook(gcp_conn_id='google_cloud')  # Use your connection ID here
         
         # Initialize BigQuery client via the hook
-        client = hook.get_client(project_id=project_id)
+        client = hook.get_client(project_id)
         # Fetch a list of datasets (just to test if the connection is working)
-        datasets = list(client.list_datasets())  # Will list datasets in the project
+        datasets = list(client.list_datasets())
+        print(datasets)  # Will list datasets in the project
+        
         
         if datasets:
             logging.info(f"Successfully connected to Google Cloud BigQuery. Found {len(datasets)} datasets.")
+            print('Starting working on query')
+            try:
+                table_name = table_id.split('.')[-1]
+                query = f"SELECT column_name FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.COLUMNS` WHERE table_name = '{table_name}';"
+                query_job = client.query(query)
+                result = query_job.result() 
+                # result is in row iteration output so geting that output by running a for loop
+                existing_columns = [row['column_name'] for row in result]
+                print(existing_columns) 
+            except Exception as e:
+                logging.error(f"Failed to fetch schema from BigQuery: {e}")
         else:
             logging.warning("Successfully connected to Google Cloud BigQuery, but no datasets found.")
+
     
     except Exception as e:
         logging.error(f"Failed to connect to Google Cloud BigQuery: {e}")

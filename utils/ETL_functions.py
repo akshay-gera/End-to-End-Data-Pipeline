@@ -78,8 +78,21 @@ def fetch_new_record_id(input_df, existing_ids ):
     else:
         logging.info(f"No todays data to look into to check new records")
 
+def bigquery_schema_check(project_id, dataset_id, table_id):
+    # Using BigQueryHook which will automatically pull connection from Airflow UI
+    hook = BigQueryHook(gcp_conn_id='google_cloud')  # Use your connection ID here
+        
+    # Initialize BigQuery client via the hook
+    client = hook.get_client(project_id=project_id)
 
-
+    table_name = table_id.split('.')[-1]
+    query = f"SELECT column_name FROM `{dataset_id}.INFORMATION_SCHEMA.COLUMNS` WHERE table_name = '{table_name}';"
+    query_job = client.query(query)
+    result = query_job.result() 
+               
+    # result is in row iteration output so geting that output by running a for loop
+    existing_columns = [row['column_name'] for row in result] 
+    return existing_columns
 
 def load_raw_data(project_id, dataset_id, table_id, todays_df):
     try:
@@ -99,6 +112,14 @@ def load_raw_data(project_id, dataset_id, table_id, todays_df):
         )
         # Converting the timestampt column from str to datetime to maintain schema consistency with Raw_Data table in BigQuery 
         todays_df['timestamp_fetched'] = pd.to_datetime(todays_df['timestamp_fetched'])
+        
+        try: 
+            existing_schema_columns = bigquery_schema_check(project_id, dataset_id, table_id)
+            todays_df = todays_df[existing_schema_columns]
+            logging.info(f"Schema Check Passed. Dataframe columns match with BigQuery Table Schema")
+        except Exception as e:
+            logging.error(f"Failed to fetch schema from BigQuery: {e}")
+        
         # Load data into the BigQuery table
         load_job = client.load_table_from_dataframe(todays_df, f"{table_id}", job_config=job_config)
 
