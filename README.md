@@ -124,8 +124,17 @@ To run the ETL pipeline locally, follow these steps:
    python main.py
 
 ## Airflow DAG Run Sample
-- Showcasing how Airflow DAG run would like based on the DAG we created
+Showcasing how Airflow DAG run would like based on the DAG we created
 ![image](https://github.com/user-attachments/assets/9b002bbf-96a6-4815-88b7-9aaf3b96c23f)
+ 
+Logging of Process Flow on Airflow
+ ![image](https://github.com/user-attachments/assets/ab00c152-8520-46bd-a201-3be67e2aa11b)
+
+![image](https://github.com/user-attachments/assets/30a3c798-235e-4609-958f-d3ea23f44ec7)
+![image](https://github.com/user-attachments/assets/13182536-87ce-4eba-a600-ace6c1e8d45d)
+![image](https://github.com/user-attachments/assets/a3f0a83c-cdac-478a-a1b7-ed5bbd2c0246)
+
+
 
 
 ## Data Visualization Sample
