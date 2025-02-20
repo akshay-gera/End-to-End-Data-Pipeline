@@ -42,9 +42,9 @@ jobs:
       # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
       - name: Trigger Airflow DAG run
         run: |
-          docker exec -t <container_name> airflow dags trigger -e 2025-02-18 <your_dag_id>
+          docker exec -t datapipelinelinkedinjobsapiproject airflow dags trigger -e 2025-02-18 Extract_and_Load_Pipeline
 
       # Step 6:  Fetch logs or results 
       - name: Fetch Airflow DAG logs
         run: |
-          docker exec -t <container_name> airflow tasks logs <your_dag_id>
+          docker exec -t datapipelinelinkedinjobsapiproject airflow tasks logs Extract_and_Load_Pipeline
