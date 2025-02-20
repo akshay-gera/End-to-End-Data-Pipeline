@@ -49,7 +49,12 @@ jobs:
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags trigger -e 2025-02-18 Extract_and_Load_Pipeline
 
-      # Step 6:  Fetch logs or results 
+      # Step 6.1:  Fetch webserver logs or results 
+      - name: Fetch Airflow DAG logs
+        run: |
+          docker logs end-to-end-data-pipeline_airflow-webserver_1
+      
+      # Step 6.2:  Fetch  DAG logs or results 
       - name: Fetch Airflow DAG logs
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow tasks logs Extract_and_Load_Pipeline
