@@ -1,0 +1,48 @@
+name: Run Airflow DAGs with Docker Compose
+
+on:
+  push:
+    branches:
+      - main    # Adjust if you want to run on other branches
+  schedule:
+    - cron: '0 0 * * *'  # Optional: schedule DAG runs (every midnight UTC)
+
+jobs:
+  airflow:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+
+    steps:
+      # Step 1: Checkout your GitHub repository to the runner
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker and Docker Compose on the GitHub runner
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Step 3: Start Airflow services using docker-compose
+      - name: Start Airflow using Docker Compose
+        run: |
+          docker-compose -f docker-compose.yml up -d  # This will start Airflow containers in the background
+
+      # Step 4: Wait for Airflow to start ( gives time for services to spin up)
+      - name: Wait for Airflow to start
+        run: |
+          sleep 30  
+
+      # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
+      - name: Trigger Airflow DAG run
+        run: |
+          docker exec -t <container_name> airflow dags trigger -e 2025-02-18 <your_dag_id>
+
+      # Step 6:  Fetch logs or results 
+      - name: Fetch Airflow DAG logs
+        run: |
+          docker exec -t <container_name> airflow tasks logs <your_dag_id>
