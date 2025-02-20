@@ -37,17 +37,29 @@ jobs:
       # Step 4: Wait for Airflow to start ( gives time for services to spin up)
       - name: Wait for Airflow to start
         run: |
-          sleep 60  
+          sleep 30  
 
       # Step 4.2 Debugging step to list DAGs
       - name: List Airflow DAGs
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags list
 
-      # Step 4.3 Debugging step to list DAGs in mentioned DAG Directory
+      # Step 4.2.1 Debugging Checking Airflow Logs for import errors
+      - name: Check Airflow Logs for Current Webserver
+        run: |
+          docker logs end-to-end-data-pipeline_airflow-webserver_1
+
+
+      # Step 4.3 Debugging step to list DAGs in the mentioned DAG Directory
       - name: List DAGs directory inside container
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 ls /opt/airflow/dags
+
+      # Step 4.4 Debugging step to check for import errors with  a particular DAG
+      - name: Verifying import errors with DAGs
+        run: | 
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
+          
 
 
       # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
@@ -55,7 +67,7 @@ jobs:
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags trigger -e 2025-02-18 Extract_and_Load_Pipeline
 
-      # Step 6.1:  Fetch webserver logs or results 
+      # Step 6.1:  Fetch web server logs or results 
       - name: Fetch Airflow DAG logs
         run: |
           docker logs end-to-end-data-pipeline_airflow-webserver_1
