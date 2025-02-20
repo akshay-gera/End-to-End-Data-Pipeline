@@ -44,6 +44,12 @@ jobs:
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags list
 
+      # Step 4.3 Debugging step to list DAGs in mentioned DAG Directory
+      - name: List DAGs directory inside container
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 ls /opt/airflow/dags
+
+
       # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
       - name: Trigger Airflow DAG run
         run: |
