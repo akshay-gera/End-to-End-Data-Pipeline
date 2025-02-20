@@ -5,7 +5,9 @@ on:
     branches:
       - main    # Adjust if you want to run on other branches
   schedule:
-    - cron: '0 0 * * *'  # Optional: schedule DAG runs (every midnight UTC)
+    - cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
+  # enables manual triggering
+  workflow_dispatch:
 
 jobs:
   airflow:
