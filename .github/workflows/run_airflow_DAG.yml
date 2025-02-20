@@ -37,7 +37,7 @@ jobs:
       # Step 4: Wait for Airflow to start ( gives time for services to spin up)
       - name: Wait for Airflow to start
         run: |
-          sleep 30  
+          sleep 60  
 
       # Step 4.2 Debugging step to list DAGs
       - name: List Airflow DAGs
