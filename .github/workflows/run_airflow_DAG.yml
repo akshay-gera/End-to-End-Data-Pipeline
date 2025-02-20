@@ -32,7 +32,7 @@ jobs:
       # Step 3: Start Airflow services using docker-compose
       - name: Start Airflow using Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up -d  # This will start Airflow containers in the background
+          docker-compose -f docker-compose.yaml up -d  # This will start Airflow containers in the background
 
       # Step 4: Wait for Airflow to start ( gives time for services to spin up)
       - name: Wait for Airflow to start
