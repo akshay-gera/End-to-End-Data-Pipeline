@@ -39,6 +39,11 @@ jobs:
         run: |
           sleep 30  
 
+      # Step 4.2 Debugging step to list DAGs
+      - name: List Airflow DAGs
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags list
+
       # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
       - name: Trigger Airflow DAG run
         run: |
