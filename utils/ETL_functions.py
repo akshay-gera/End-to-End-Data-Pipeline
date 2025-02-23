@@ -23,7 +23,7 @@ logging.basicConfig(
 def extract_data(url, headers, params):
     try:
         logging.info("Starting data extraction from LinkedIn API...")
-        response = requests.get(url, headers=headers, params=querystring)
+        response = requests.get(url, headers=headers, params=params)
 
         # To make sure we log messages from API call response which doesn't result into any data and also doesn't go into except code block
         response_data = response.json()
@@ -135,26 +135,3 @@ def load_raw_data(project_id, dataset_id, table_id, todays_df):
         logging.error(f"Data Load Function Failed with error {e}")
 
 
-#from config import config
-import config
-
-# Setting up paramaters and variables for the functions to run on
-api_url = "https://linkedin-api8.p.rapidapi.com/search-jobs"
-
-querystring = {"keywords":"Data Analyst","locationId":"103035651","datePosted":"past24Hours","sort":"mostRecent"}
-
-headers = {
-	"x-rapidapi-key": config.API_KEY,
-	"x-rapidapi-host": "linkedin-api8.p.rapidapi.com"
-}
-
-# Set Google Cloud project ID and BigQuery dataset/table info
-project_id = 'linkedinapidatapipeline'
-dataset_id = 'linkedinapidatapipeline.Raw'
-table_id = f"{dataset_id}.Raw_Data"
-
-# Trigerring the function runs in all the steps
-df_jobs_today = extract_data(url=api_url, headers=headers, params=querystring)
-existing_job_ids = get_existing_ids_from_bq(project_id=project_id, dataset_id=dataset_id, table_id=table_id)
-df_jobs_today_new_records = fetch_new_record_id(input_df=df_jobs_today, existing_ids=existing_job_ids)
-load_raw_data(project_id=project_id, dataset_id=dataset_id, table_id=table_id, todays_df=df_jobs_today_new_records)
