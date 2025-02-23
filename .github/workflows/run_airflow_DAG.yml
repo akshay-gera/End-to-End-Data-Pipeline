@@ -44,6 +44,11 @@ jobs:
       - name: Set API_KEY as environment variable for Docker
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 bash -c "echo 'export API_KEY=${{ secrets.API_KEY }}' >> /opt/airflow/.env"
+      
+      # Step 3.3: Install missing Python dependencies like python-dotenv
+      - name: Install Python dependencies (python-dotenv)
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 pip install python-dotenv
 
 
       # Step 4: Wait for Airflow to start ( gives time for services to spin up)
