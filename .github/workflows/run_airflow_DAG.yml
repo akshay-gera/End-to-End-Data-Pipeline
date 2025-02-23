@@ -1,0 +1,78 @@
+name: Run Airflow DAGs with Docker Compose
+
+on:
+  push:
+    branches:
+      - main    # Adjust if you want to run on other branches
+  schedule:
+    - cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
+  # enables manual triggering
+  workflow_dispatch:
+
+jobs:
+  airflow:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+
+    steps:
+      # Step 1: Checkout your GitHub repository to the runner
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker and Docker Compose on the GitHub runner
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Step 3: Start Airflow services using docker-compose
+      - name: Start Airflow using Docker Compose
+        run: |
+          docker-compose -f docker-compose.yaml up -d  # This will start Airflow containers in the background
+
+      # Step 4: Wait for Airflow to start ( gives time for services to spin up)
+      - name: Wait for Airflow to start
+        run: |
+          sleep 30  
+
+      # Step 4.2 Debugging step to list DAGs
+      - name: List Airflow DAGs
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags list
+
+      # Step 4.2.1 Debugging Checking Airflow Logs for import errors
+      - name: Check Airflow Logs for Current Webserver
+        run: |
+          docker logs end-to-end-data-pipeline_airflow-webserver_1
+
+
+      # Step 4.3 Debugging step to list DAGs in the mentioned DAG Directory
+      - name: List DAGs directory inside container
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 ls /opt/airflow/dags
+
+      # Step 4.4 Debugging step to check for import errors with  a particular DAG
+      - name: Verifying import errors with DAGs
+        run: | 
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
+          
+
+
+      # Step 5: Trigger Airflow DAG(s) using Airflow CLI inside the container
+      - name: Trigger Airflow DAG run
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow dags trigger -e 2025-02-18 Extract_and_Load_Pipeline
+
+      # Step 6.1:  Fetch web server logs or results 
+      - name: Fetch Airflow DAG logs
+        run: |
+          docker logs end-to-end-data-pipeline_airflow-webserver_1
+      
+      # Step 6.2:  Fetch  DAG logs or results 
+      - name: Fetch Airflow DAG logs
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 airflow tasks logs Extract_and_Load_Pipeline
