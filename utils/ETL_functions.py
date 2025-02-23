@@ -136,7 +136,7 @@ def load_raw_data(project_id, dataset_id, table_id, todays_df):
 
 
 #from config import config
-from config.config import API_KEY
+import config
 
 # Setting up paramaters and variables for the functions to run on
 api_url = "https://linkedin-api8.p.rapidapi.com/search-jobs"
@@ -144,7 +144,7 @@ api_url = "https://linkedin-api8.p.rapidapi.com/search-jobs"
 querystring = {"keywords":"Data Analyst","locationId":"103035651","datePosted":"past24Hours","sort":"mostRecent"}
 
 headers = {
-	"x-rapidapi-key": API_KEY,
+	"x-rapidapi-key": config.API_KEY,
 	"x-rapidapi-host": "linkedin-api8.p.rapidapi.com"
 }
 
