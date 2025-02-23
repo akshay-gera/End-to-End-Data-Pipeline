@@ -34,9 +34,6 @@ jobs:
         run: |
           docker-compose -f docker-compose.yaml up -d  # This will start Airflow containers in the background
 
-           # Mount the config folder directly into the container via Docker Compose
-          docker-compose exec -T airflow-webserver bash -c "ls /path/in/container/config"
-
 
       # Step 3.1: Verify if the config folder is mounted correctly inside the container
       - name: Verify config folder inside container
