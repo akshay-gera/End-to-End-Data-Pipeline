@@ -75,7 +75,7 @@ jobs:
       # Step 4.4 Debugging step to check for import errors with  a particular DAG
       - name: Verifying import errors with DAGs
         run: | 
-          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
+          docker exec -u root -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
           
 
 
