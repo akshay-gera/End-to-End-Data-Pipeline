@@ -1,13 +1,13 @@
 name: Run Airflow DAGs with Docker Compose
 
-on:
-  push:
-    branches:
+#on:
+  #push:
+    #branches:
       - main    # Adjust if you want to run on other branches
-  schedule:
-    - cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
+  #schedule:
+    #- cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
   # enables manual triggering
-  workflow_dispatch:
+  #workflow_dispatch:
 
 jobs:
   airflow:
@@ -39,6 +39,16 @@ jobs:
       - name: Verify config folder inside container
         run: |
           docker exec -t end-to-end-data-pipeline_airflow-webserver_1 ls /opt/airflow/config
+      
+      # Step 3.2: Setting up environment variable which is stored as Github Actions Secrets
+      - name: Set API_KEY as environment variable for Docker
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 bash -c "echo 'export API_KEY=${{ secrets.API_KEY }}' >> /opt/airflow/.env"
+      
+      # Step 3.3: Install missing Python dependencies like python-dotenv
+      - name: Install Python dependencies (python-dotenv)
+        run: |
+          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 bash -c "sudo pip install python-dotenv"
 
 
       # Step 4: Wait for Airflow to start ( gives time for services to spin up)
@@ -65,7 +75,7 @@ jobs:
       # Step 4.4 Debugging step to check for import errors with  a particular DAG
       - name: Verifying import errors with DAGs
         run: | 
-          docker exec -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
+          docker exec -u root -t end-to-end-data-pipeline_airflow-webserver_1 python /opt/airflow/dags/dag_ETL.py
           
 
 
