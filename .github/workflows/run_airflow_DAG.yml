@@ -1,13 +1,13 @@
 name: Run Airflow DAGs with Docker Compose
 
-on:
-  push:
-    branches:
+#on:
+  #push:
+    #branches:
       - main    # Adjust if you want to run on other branches
-  schedule:
-    - cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
+  #schedule:
+    #- cron: '0 0 * * *'  # schedule DAG runs (every midnight UTC)
   # enables manual triggering
-  workflow_dispatch:
+  #workflow_dispatch:
 
 jobs:
   airflow:
