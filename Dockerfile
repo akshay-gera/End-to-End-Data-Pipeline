@@ -1,5 +1,5 @@
 FROM apache/airflow:2.5.1
-FROM python:3.9-slim
+FROM python:3.11
 
 # Install dependencies from requirements.txt
 COPY requirements.txt /
